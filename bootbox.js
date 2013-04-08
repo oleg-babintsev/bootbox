@@ -1,5 +1,5 @@
 /**
- * bootbox.js v3.2.0
+ * bootbox.js v3.2.0-mod1
  *
  * http://bootboxjs.com/license.txt
  */
@@ -14,6 +14,7 @@ var bootbox = window.bootbox || (function(document, $) {
         _classes       = '',
         _btnClasses    = {},
         _icons         = {},
+        _options       = {},
         /* last var should always be the public object we'll return */
         that           = {};
 
@@ -271,11 +272,8 @@ var bootbox = window.bootbox || (function(document, $) {
 
     that.dialog = function(str, handlers, options) {
         var buttons    = "",
-            callbacks  = [];
-
-        if (!options) {
-            options = {};
-        }
+            callbacks  = [],
+            options    = $.extend({},_options,(options || {}));
 
         // check for single object and convert to array if necessary
         if (typeof handlers === 'undefined') {
@@ -551,6 +549,10 @@ var bootbox = window.bootbox || (function(document, $) {
 
     that.classes = function(classes) {
         _classes = classes;
+    };
+
+    that.setOptions = function(options) {
+        _options = options;
     };
 
     /**
