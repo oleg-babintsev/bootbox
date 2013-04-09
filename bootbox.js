@@ -1,5 +1,5 @@
 /**
- * bootbox.js v3.2.0-mod1
+ * bootbox.js v3.2.0-mod2
  *
  * http://bootboxjs.com/license.txt
  */
@@ -212,8 +212,14 @@ var bootbox = window.bootbox || (function(document, $) {
         var header = str;
 
         // let's keep a reference to the form object for later
-        var form = $("<form></form>");
-        form.append("<input autocomplete=off type=text value='" + defaultVal + "' />");
+        var body = $("<div>").append(str).append("<form></form>"),
+            form = body.find("form");
+		
+        if (typeof _options['promptFormBody'] != 'undefined') {
+            form.append(_options['promptFormBody']);
+        } else {
+            form.append("<input autocomplete=off type=text value='" + defaultVal + "' />");
+		}
 
         var cancelCallback = function() {
             if (typeof cb === 'function') {
@@ -225,11 +231,11 @@ var bootbox = window.bootbox || (function(document, $) {
 
         var confirmCallback = function() {
             if (typeof cb === 'function') {
-                return cb(form.find("input[type=text]").val());
+                return cb(form.find("input[type=text],textarea").val());
             }
         };
 
-        var div = that.dialog(form, [{
+        var div = that.dialog(body, [{
             // first button (cancel)
             "label"   : labelCancel,
             "icon"    : _icons.CANCEL,
@@ -243,7 +249,7 @@ var bootbox = window.bootbox || (function(document, $) {
             "callback": confirmCallback
         }], {
             // prompts need a few extra options
-            "header"  : header,
+            //"header"  : header,
             // explicitly tell dialog NOT to show the dialog...
             "show"    : false,
             "onEscape": cancelCallback
@@ -318,11 +324,15 @@ var bootbox = window.bootbox || (function(document, $) {
                 callback = handlers[i]['callback'];
             }
 
+            if (typeof options['defBtnClasses'] != 'undefined') {
+                _class = options['defBtnClasses'] + " ";
+            }
             if (handlers[i]['class']) {
-                _class = handlers[i]['class'];
-            } else if (i == handlers.length -1 && handlers.length <= 2) {
+                _class += handlers[i]['class'];
+            }
+			if (i == handlers.length -1 && handlers.length <= 2) {
                 // always add a primary to the main option in a two-button dialog
-                _class = 'btn-primary';
+                _class = 'btn-primary ' + _class;
             }
 
             if (handlers[i]['label']) {
@@ -342,7 +352,8 @@ var bootbox = window.bootbox || (function(document, $) {
                 href = _defaultHref;
             }
 
-            buttons = "<a data-handler='"+i+"' class='btn "+_class+"' href='" + href + "'>"+icon+""+label+"</a>" + buttons;
+
+            buttons = "<a data-handler='"+i+"' class='"+_class+"' href='" + href + "'>"+icon+""+label+"</a>" + buttons;
 
             callbacks[i] = callback;
         }
